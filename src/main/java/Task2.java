@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Task2 {
@@ -31,17 +32,31 @@ public class Task2 {
             action.moveToElement(aElektroinstrument).clickAndHold().build().perform();
             //click on dreli
             WebElement dreli = driver.findElement(By.xpath("//a[@href='/catalog/dreli/']"));
-            dreli.click();
-            //see price of goods on the list xpath //li[@class='col-xs-4 js-product']//span[@class="price"]
-            List<WebElement> dreliList = driver.findElements(By.xpath("//ul//li[@class='col-xs-4 js-product']"));
-            WebElement nextPage = driver.findElement(By.cssSelector("div.paging a.next"));
+            action.moveToElement(dreli).click().build().perform();
+            //see price of goods on the list xpath //li[@class='col-xs-4 js-product']//span[@class='price']
+            List<WebElement> dreliListWebElements = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
+
+
+            //load info in new list in order to keep it even after the page reloaded
+            List<WebElement> drelis = new ArrayList<>(dreliListWebElements);
+
+            WebElement nextPage = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
+
+            int lastItemIndex = dreliListWebElements.size()-1;
             nextPage.click();
-            wait.until(ExpectedConditions)
-            /*for (WebElement item:dreliList){
-                WebElement price = item.findElement(By.xpath(".//span[@class='price']"));
-                //System.out.println(price.getText());
+            //wait until last element from prev page is hide
+            wait.until(ExpectedConditions.stalenessOf(dreliListWebElements.get(lastItemIndex)));
+
+            //load new information from next page to drelis list
+            dreliListWebElements = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
+            for (WebElement drelFromNextPage:dreliListWebElements){
+                drelis.add(drelFromNextPage);
+            }
+            /*for (WebElement drel: drelis){
+                System.out.println(drel.getText());
             }*/
-            //System.out.println(dreliList.size());
+
+            System.out.println(drelis.size());
 
             /*
             List<WebElement> pages = driver.findElements(By.cssSelector("div.paging ul li  a"));
@@ -54,7 +69,7 @@ public class Task2 {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
-            Thread.sleep(20000);
+            //Thread.sleep(20000);
             driver.quit();
         }
     }
