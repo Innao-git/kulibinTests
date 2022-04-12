@@ -39,19 +39,19 @@ public class Task4 {
                 bolgarkiWholeList = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
                 //if item get class image_sticker_discount
                 for (WebElement item : bolgarkiWholeList) {
-                    try {
-                        WebElement discountItem = item.findElement(By.xpath("./span[contains(@class, 'image_sticker_discount')]"));
+                    if (item.findElement(By.xpath(".//span")).getText().contains("%")){
+                        WebElement discountItem = item.findElement(By.xpath(".//span[contains(@class, 'image_sticker_discount')]"));
 
-                        String discount = discountItem.getText();
+                        String discountPersentage = discountItem.getText().replaceAll("[- %]","");
                         String name = item.findElement(By.className("s_title")).getText();
-                        /*WebElement priceRow = (new WebDriverWait(driver, Duration.ofSeconds(5))
-                                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='price-row']"))));
-                        String oldPrice = priceRow.findElement(By.xpath(".//span[@class='item_old_price old-price']")).getText();
-                        String price = priceRow.findElement(By.xpath(".//span[@class='price']")).getText();*/
-                        System.out.println(name + " " + discount);
-                    } catch (Exception e) {
-                        continue;
+
+                        String oldPrice = item.findElement(By.className("old-price")).getText().replaceAll("[ грн.]","");
+                        float priceCalculated = Integer.parseInt(oldPrice)-Float.parseFloat(discountPersentage)*Integer.parseInt(oldPrice)/100;
+                        String currentPrice = item.findElement(By.xpath(".//span[@class='price']")).getText();
+
+                        System.out.println(name + " " + discountPersentage+ "priceShouldBe "+ String. valueOf(priceCalculated)+"/ "+ currentPrice);
                     }
+
                 }
 
                 WebElement nextPageButton = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
