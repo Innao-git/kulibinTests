@@ -1,6 +1,3 @@
-/*2. Перейти в раздел "Электроинструменты" / "Дрели"
-Проверить, что у всех товаров этого раздела есть цена на первых двух страницах.*/
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,12 +9,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class Task2 {
-
-    public static final int COUNT_OF_PAGES_TO_CHECK = 3;
-
+public class Task2_LoadAnother15 {
     public static void main(String[] args) throws InterruptedException {
 
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
@@ -36,34 +31,27 @@ public class Task2 {
             //click on dreli
             WebElement dreli = driver.findElement(By.xpath("//a[@href='/catalog/dreli/']"));
             action.moveToElement(dreli).click().build().perform();
-            int counter = 0;
-            for (int i = 0; i< COUNT_OF_PAGES_TO_CHECK; i++){
-
-                List<WebElement> dreliList = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
 
 
-                //load prices in new list in order to keep it even after the page reloaded
 
-                for (WebElement drel:dreliList){
-
-                    try{
-                        String price = drel.findElement(By.xpath(".//span[@class='price']")).getText();
-                        counter++;
-                        System.out.println("number: "+counter+ " price: "+price);
-                    }catch(Exception e){
-                        System.out.println("price is nos not found");
-                    }
-                }
-                if (i < (COUNT_OF_PAGES_TO_CHECK-1)) {
-                WebElement nextPage = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
-
-                nextPage.click();
-
-                //wait until page is loaded
-                new WebDriverWait(driver, Duration.ofSeconds(30)).until(
-                            webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
-                }
+            WebElement loadMore = driver.findElement(By.cssSelector("a.btn-blue.show-more-link"));
+            loadMore.click();
+            new WebDriverWait(driver, Duration.ofSeconds(30)).until(
+                    webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+            List<WebElement> dreliList = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
+            System.out.println(dreliList.size());
+            HashMap<String,String> dreliFromTwoPages=new HashMap<String,String>();
+            for (WebElement drel:dreliList){
+                String price = drel.findElement(By.xpath(".//span[@class='price']")).getText();
+                String href = drel.findElement(By.xpath(".//a[@class='title google_detail_link']")).getAttribute("href");
+                dreliFromTwoPages.put(href, price);
             }
+            System.out.println(dreliFromTwoPages);
+
+
+
+
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();
