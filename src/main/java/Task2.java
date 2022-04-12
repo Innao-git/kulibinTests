@@ -11,19 +11,18 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Task2 {
 
-    public static final int COUNT_OF_PAGES_TO_CHECK = 3;
+    public static final int COUNT_OF_PAGES_TO_CHECK = 2;
 
     public static void main(String[] args) throws InterruptedException {
 
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
 
         try {
             driver.get("https://kulibin.com.ua");
@@ -56,7 +55,7 @@ public class Task2 {
                 }
                 if (i < (COUNT_OF_PAGES_TO_CHECK-1)) {
                 WebElement nextPage = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
-
+                new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.elementToBeClickable(nextPage));
                 nextPage.click();
 
                 //wait until page is loaded
