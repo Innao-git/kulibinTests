@@ -9,15 +9,19 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.List;
 
 public class Task2 {
 
-    public static final int COUNT_OF_PAGES_TO_CHECK = 2;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static final int COUNT_OF_PAGES_TO_CHECK = 2;
+    @Test
+    void main() throws InterruptedException {
 
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
@@ -44,14 +48,18 @@ public class Task2 {
                 //load prices in new list in order to keep it even after the page reloaded
 
                 for (WebElement drel:dreliList){
-
+                    String price = "";
+                    String drelTitle = drel.findElement(By.className("s_title")).getText();
                     try{
-                        String price = drel.findElement(By.xpath(".//span[@class='price']")).getText();
+                        price = drel.findElement(By.xpath(".//span[@class='price']")).getText();
                         counter++;
-                        System.out.println("number: "+counter+ " price: "+price);
+                        System.out.println("number: "+counter+ " price: "+price + drelTitle);
+
                     }catch(Exception e){
                         System.out.println("price is nos not found");
                     }
+                    //check if price is not empty
+                    Assert.assertNotEquals(price, "", drelTitle);
                 }
                 if (i < (COUNT_OF_PAGES_TO_CHECK-1)) {
                 WebElement nextPage = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
@@ -71,4 +79,5 @@ public class Task2 {
             driver.quit();
         }
     }
+
 }

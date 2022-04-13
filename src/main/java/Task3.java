@@ -11,6 +11,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,8 +20,8 @@ import java.util.List;
 public class Task3 {
 
     public static final int COUNT_OF_PAGES_TO_CHECK = 3;
-
-    public static void main(String[] args) {
+    @Test
+    void main() {
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -48,15 +50,18 @@ public class Task3 {
                         //div[@class='item-brand-country'/img.getAttribute('src')=="https://kulibin.com.ua/upload/resize_cache/iblock/0f5/30_20_1/United_states.jpg"
                         String flag = shurupovert.findElement(By.xpath(".//div[@class='item-brand-country']/img")).getAttribute("src");
                         if (flag.contains("United_states")) {
+                            String name = "";
                             //(By.xpath(".//h4[@class='s_title']")).getText();
                             try {
-                                String name = shurupovert.findElement(By.className("s_title")).getText();
+                                name = shurupovert.findElement(By.className("s_title")).getText();
 
                                 counter++;
                                 System.out.println("number: " + counter + " name: " + name);
                             } catch (Exception e) {
                                 System.out.println("name is not found");
                             }
+                            //failed test if name =""
+                            Assert.assertNotEquals(name, "");
                         }
 
                     } catch (Exception e) {
@@ -82,4 +87,6 @@ public class Task3 {
         }
 
     }
+
+
 }

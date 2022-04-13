@@ -5,6 +5,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -19,8 +22,8 @@ import java.util.Random;
 public class Task1 {
 
     public static final int GOODS_QUANTITY_TO_CHECK = 3;
-
-    public static void main(String[] args) throws InterruptedException {
+    @Test
+    void main() throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         //driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
@@ -57,7 +60,7 @@ public class Task1 {
                 int randomIndex = r.nextInt(listOfPromotionalGoodsLinks.size());
 
                 String randomLink = listOfPromotionalGoodsLinks.get(randomIndex);
-                System.out.println(randomLink);
+                //System.out.println(randomLink);
 
                 driver.get(randomLink);
                 //check page is loaded - check prices - go back
@@ -67,16 +70,18 @@ public class Task1 {
                 //System.out.println(priceRow.getText());
                 WebElement oldPrice = priceRow.findElement(By.xpath(".//span[@class='item_old_price old-price']"));
                 WebElement price = priceRow.findElement(By.xpath(".//span[@class='price']"));
+                String priceText= "";
                 if (oldPrice.isDisplayed()) {
-                    System.out.println("oldPrice is " + oldPrice.getText());
-                } else {
-                    System.out.println("oldPriceElement is not found");
+                    priceText+= " oldPrice: " + oldPrice.getText();
                 }
                 if (price.isDisplayed()) {
-                    System.out.println("newPrice is " + price.getText());
-                } else {
-                    System.out.println("newPriceElement is not found");
+                    priceText+= " currentPrice: " + price.getText();
                 }
+
+                System.out.println(randomLink+priceText);
+                Assert.assertTrue(oldPrice.isDisplayed(),"oldPrice is not displayed for: "+randomLink);
+                Assert.assertTrue(price.isDisplayed(),"currentPrice is not displayed for: "+randomLink);
+
                 listOfPromotionalGoodsLinks.remove(randomIndex);
                 driver.navigate().back();
             }
@@ -87,14 +92,15 @@ public class Task1 {
 
     {
         e.printStackTrace();
-    } finally
-
-    {
+    } finally {
         Thread.sleep(20000);
         driver.quit();
     }
 
 }
 
+/*public void test1(){
+        System.out.println("Test 1");
+}*/
 
 }

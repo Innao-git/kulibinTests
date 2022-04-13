@@ -3,6 +3,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -23,8 +25,8 @@ public class Task4 {
       float currentPrice;
       float oldPrice;
    }
-
-    public static void main(String[] args) {
+    @Test
+    void main() {
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -102,11 +104,14 @@ public class Task4 {
                 float currentPrice = randomDiscountItem.currentPrice;
                 float oldPrice =randomDiscountItem.oldPrice;
                 float priceCalculated = oldPrice - discountValue * oldPrice / 100;
+                //В assert упавшего теста вывести наименование товара его ожидаемую и фактическую цену.*/
+
                 if (priceCalculated != currentPrice) {
                     System.out.println(name + " " + discountValue + " Error, the price shouldBe " + String.valueOf(priceCalculated) + "/ " + String.valueOf(currentPrice));
                 } else {
                     System.out.println(name + " " + "the price is correct" + String.valueOf(priceCalculated));
                 }
+                Assert.assertEquals(priceCalculated, currentPrice, name);
                 discountItemsList.remove(randomIndex);
             }
 
