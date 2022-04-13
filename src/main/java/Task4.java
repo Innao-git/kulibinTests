@@ -1,7 +1,4 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,7 +15,14 @@ import java.util.Random;
 В assert упавшего теста вывести наименование товара его ожидаемую и фактическую цену.*/
 public class Task4 {
 
-    public static final int DISCOUNT_ITEMS_QUNTITY = 10;
+    public static final int DISCOUNT_ITEMS_QUANTITY = 10;
+
+   static class DiscountedItem {
+      String name;
+      int discountValue;
+      float currentPrice;
+      float oldPrice;
+   }
 
     public static void main(String[] args) {
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver\\chromedriver_100_0_4896_60\\chromedriver.exe");
@@ -38,7 +42,7 @@ public class Task4 {
             WebElement bolgarkiMenu = driver.findElement(By.xpath("//a[@href='/catalog/bolgarki/']"));
             action.moveToElement(bolgarkiMenu).click().build().perform();
             List<WebElement> bolgarkiWholeList;
-            ArrayList<ArrayList<String>> discountItemsList = new ArrayList<ArrayList<String>>();
+            ArrayList<DiscountedItem> discountItemsList = new ArrayList();
 
             do {
                 bolgarkiWholeList = driver.findElements(By.xpath("//ul/li[@class='col-xs-4 js-product']"));
@@ -55,20 +59,27 @@ public class Task4 {
 
                         String currentPrice = item.findElement(By.xpath(".//span[@class='price']")).getText().replaceAll("[ грн.]", "");
 
-                        ArrayList<String> discountListItem = new ArrayList();
-                        discountListItem.add(name);
-                        discountListItem.add(discountValue);
-                        discountListItem.add(currentPrice);
-                        discountListItem.add(oldPrice);
-                        discountItemsList.add(discountListItem);
+                        DiscountedItem discountedItem = new DiscountedItem();
+                        discountedItem.name = name;
+                        discountedItem.discountValue = Integer.parseInt(discountValue);
+                        discountedItem.currentPrice = Float.parseFloat(currentPrice);
+                        discountedItem.oldPrice = Float.parseFloat(oldPrice);
+                        discountItemsList.add(discountedItem);
                     }
                 }
 
 
                 WebElement nextPageButton = driver.findElement(By.cssSelector("div.paging a.next.btn-blue"));
-                new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(nextPageButton));
+                new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.elementToBeClickable(nextPageButton));
                 if (nextPageButton.isEnabled()) {
-                    nextPageButton.click();
+                    try{
+                        nextPageButton.click();
+
+                    }catch(ElementClickInterceptedException e){
+                        Thread.sleep(10000);
+                        nextPageButton.click();
+                    }
+
                     new WebDriverWait(driver, Duration.ofSeconds(30)).until(
                             webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
                 } else {
@@ -76,23 +87,25 @@ public class Task4 {
                 }
 
             } while ((bolgarkiWholeList.size() != 0));
-            //add check if button is desabled
+            //add check if button is disabled
             System.out.println(discountItemsList.size());
 
-            int maxIterations = Math.min(DISCOUNT_ITEMS_QUNTITY, discountItemsList.size());
+            int maxIterations = Math.min(DISCOUNT_ITEMS_QUANTITY, discountItemsList.size());
             Random r = new Random(System.currentTimeMillis());
+            System.out.println("Random "+maxIterations +"items are:");
             for (int i = 0; i < maxIterations; i++) {
                 int randomIndex = r.nextInt(discountItemsList.size());
-                ArrayList<String> randomDiscountItem = discountItemsList.get(randomIndex);
-                String name = randomDiscountItem.get(0);
-                float discountValue = Float.parseFloat(randomDiscountItem.get(1));
-                float currentPrice = Float.parseFloat(randomDiscountItem.get(2));
-                float oldPrice = Float.parseFloat(randomDiscountItem.get(3));
+                DiscountedItem randomDiscountItem = discountItemsList.get(randomIndex);
+
+                String name = randomDiscountItem.name;
+                int discountValue = randomDiscountItem.discountValue;
+                float currentPrice = randomDiscountItem.currentPrice;
+                float oldPrice =randomDiscountItem.oldPrice;
                 float priceCalculated = oldPrice - discountValue * oldPrice / 100;
                 if (priceCalculated != currentPrice) {
-                    System.out.println(name + " " + discountValue + " priceShouldBe " + String.valueOf(priceCalculated) + "/ " + String.valueOf(currentPrice));
+                    System.out.println(name + " " + discountValue + " Error, the price shouldBe " + String.valueOf(priceCalculated) + "/ " + String.valueOf(currentPrice));
                 } else {
-                    System.out.println(name + " " + discountValue + " price is right" + String.valueOf(priceCalculated));
+                    System.out.println(name + " " + "the price is correct" + String.valueOf(priceCalculated));
                 }
                 discountItemsList.remove(randomIndex);
             }
