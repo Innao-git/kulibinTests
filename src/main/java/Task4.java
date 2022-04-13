@@ -88,10 +88,13 @@ public class Task4 {
                 float discountValue = Float.parseFloat(randomDiscountItem.get(1));
                 float currentPrice = Float.parseFloat(randomDiscountItem.get(2));
                 float oldPrice = Float.parseFloat(randomDiscountItem.get(3));
-
-                float priceCalculated = oldPrice - discountValue*oldPrice/100;
-                System.out.println(name + " " + discountValue + " priceShouldBe " + String.valueOf(priceCalculated) + "/ " + String.valueOf(currentPrice));
-            discountItemsList.remove(randomIndex);
+                float priceCalculated = oldPrice - discountValue * oldPrice / 100;
+                if (priceCalculated != currentPrice) {
+                    System.out.println(name + " " + discountValue + " priceShouldBe " + String.valueOf(priceCalculated) + "/ " + String.valueOf(currentPrice));
+                } else {
+                    System.out.println(name + " " + discountValue + " price is right" + String.valueOf(priceCalculated));
+                }
+                discountItemsList.remove(randomIndex);
             }
 
         } catch (InterruptedException e) {
